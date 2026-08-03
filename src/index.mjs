@@ -7,13 +7,22 @@ import { startServer } from './server.mjs';
 
 const argv = process.argv.slice(2);
 
+/**
+ * Пишем и в консоль, и в файл: у собранной программы окна нет вовсе, и файл рядом
+ * с ней — единственный способ понять, что происходило. Обе записи могут не пройти
+ * (нет консоли, нет прав на папку), поэтому падать из-за лога нельзя.
+ */
 function log(message) {
   const line = `${new Date().toISOString()} ${message}`;
-  console.log(line);
+  try {
+    console.log(line);
+  } catch {
+    // Оконная подсистема: stdout никуда не ведёт.
+  }
   try {
     appendFileSync(join(appDir(), 'printservice.log'), `${line}\n`);
   } catch {
-    // Права на запись рядом с программой есть не всегда — в консоли сообщение уже есть.
+    // Права на запись рядом с программой есть не всегда.
   }
 }
 

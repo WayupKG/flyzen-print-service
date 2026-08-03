@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { listPrinters, printPdf } from './printer.mjs';
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 
 /** Последние задания: повтор после таймаута не должен печатать вторую этикетку. */
 const finished = new Map();
@@ -78,6 +78,17 @@ export function startServer({ port, log, printers = listPrinters, print = printP
       log(`сбой запроса: ${err.message}`);
       send(res, 500, { status: 'error', error: err.message });
     }
+  });
+
+  // Окна у программы нет, поэтому повторный запуск (двойной клик по ярлыку,
+  // ярлык поверх автозагрузки) обязан завершаться тихо: сервис уже работает.
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      log(`порт ${port} занят — PrintService уже запущен, второй экземпляр не нужен`);
+      process.exit(0);
+    }
+    log(`не удалось занять порт ${port}: ${err.message}`);
+    process.exit(1);
   });
 
   // Только localhost: печатать должна панель на этом же компьютере, открывать

@@ -1,16 +1,20 @@
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { basename, dirname, join } from 'node:path';
 
 const DEFAULT_PORT = 19100;
 
 /**
- * Папка, рядом с которой лежит программа. У собранного exe это его каталог,
- * при запуске из исходников — корень проекта.
+ * Папка, рядом с которой лежит программа: там ищутся `config.json`, лог и SumatraPDF.
+ * У собранного exe это его каталог, при запуске из исходников — корень проекта.
+ * Различаем по имени исполняемого файла: у сборки это printservice.exe, у запуска
+ * из исходников — node или bun.
  */
 export function appDir() {
-  return process.pkg || process.isBun
+  const exe = basename(process.execPath).toLowerCase();
+  return exe.startsWith('printservice')
     ? dirname(process.execPath)
-    : dirname(dirname(new URL(import.meta.url).pathname));
+    : dirname(dirname(fileURLToPath(import.meta.url)));
 }
 
 /** Порт: аргумент командной строки → config.json рядом с программой → 19100. */
