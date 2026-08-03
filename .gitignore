@@ -1,0 +1,4 @@
+node_modules/
+dist/
+printservice.log
+config.json

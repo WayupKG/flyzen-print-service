@@ -1,0 +1,13 @@
+{
+  "name": "flyzen-print-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Печать этикеток Flyzen на рабочем месте склада без диалога браузера",
+  "type": "module",
+  "main": "src/index.mjs",
+  "scripts": {
+    "start": "node src/index.mjs",
+    "test": "node --test",
+    "build:win": "bun build --compile --target=bun-windows-x64 src/index.mjs --outfile dist/printservice.exe"
+  }
+}
