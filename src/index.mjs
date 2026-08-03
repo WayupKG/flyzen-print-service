@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { appDir, resolvePort } from './config.mjs';
 import { autostartEnabled, disableAutostart, enableAutostart } from './autostart.mjs';
 import { startServer } from './server.mjs';
+import { startTray } from './tray.mjs';
 
 const argv = process.argv.slice(2);
 
@@ -89,5 +90,9 @@ if (argv[0] === 'autostart') {
   );
 } else {
   await offerAutostart();
-  startServer({ port: resolvePort(argv), log });
+  const port = resolvePort(argv);
+  const server = startServer({ port, log });
+  // Только после того, как порт занят нами: иначе второй запущенный экземпляр
+  // успел бы нарисовать свой значок, прежде чем завершиться.
+  server.on('listening', () => startTray(port, log));
 }

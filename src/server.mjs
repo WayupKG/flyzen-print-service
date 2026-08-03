@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { listPrinters, printPdf } from './printer.mjs';
 
-const VERSION = '1.0.1';
+const VERSION = '1.0.2';
 
 /** Последние задания: повтор после таймаута не должен печатать вторую этикетку. */
 const finished = new Map();
